@@ -1,0 +1,250 @@
+{
+  "info": {
+    "name": "Axum API Test Suite",
+    "_postman_id": "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
+    "description": "Collection per testare le API Axum con Postman",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create User",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": { "raw": "{{base_url}}/users", "host": ["{{base_url}}"], "path": ["users"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"{{username}}\",\n    \"name\": \"Test\",\n    \"surname\": \"User\",\n    \"password\": \"{{password}}\"\n}"
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": { "exec": ["pm.test(\"Status 201 or 409\", () => pm.expect([201,409]).to.include(pm.response.code));"] }
+        }
+      ]
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": { "raw": "{{base_url}}/login", "host": ["{{base_url}}"], "path": ["login"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"{{username}}\",\n    \"password\": \"{{password}}\"\n}"
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.expect(pm.response.code).to.eql(200));",
+              "let setCookie = pm.response.headers.get('Set-Cookie');",
+              "if (setCookie) {",
+              "  let sessionMatch = setCookie.match(/axum_session=[^;]+/);",
+              "  if (sessionMatch) {",
+              "    pm.collectionVariables.set(\"session_cookie\", sessionMatch[0]);",
+              "  }",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get My Chats",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Cookie", "value": "{{session_cookie}}" }
+        ],
+        "url": { "raw": "{{base_url}}/chats", "host": ["{{base_url}}"], "path": ["chats"] }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Group Chat",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Cookie", "value": "{{session_cookie}}" }
+        ],
+        "url": { "raw": "{{base_url}}/groups", "host": ["{{base_url}}"], "path": ["groups"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"My Group\",\n    \"is_group\": true,\n    \"participants\": [\"{{other_username}}\"]\n}"
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.expect(pm.response.code).to.eql(200));",
+              "let id = pm.response.json();",
+              "pm.collectionVariables.set(\"chat_id\", id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create Private Chat",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Cookie", "value": "{{session_cookie}}" }
+        ],
+        "url": { "raw": "{{base_url}}/chats", "host": ["{{base_url}}"], "path": ["chats"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"other_username\": \"{{other_username}}\"\n}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Invite Users to Group",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Cookie", "value": "{{session_cookie}}" }
+        ],
+        "url": { "raw": "{{base_url}}/chats/{{chat_id}}/requests", "host": ["{{base_url}}"], "path": ["chats", "{{chat_id}}", "requests"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"to\": [\"{{other_username}}\"]\n}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get My Requests",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Cookie", "value": "{{session_cookie}}" }
+        ],
+        "url": { "raw": "{{base_url}}/requests", "host": ["{{base_url}}"], "path": ["requests"] }
+      },
+      "response": []
+    },
+    {
+      "name": "Accept Request",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Cookie", "value": "{{session_cookie}}" }
+        ],
+        "url": { "raw": "{{base_url}}/requests/{{chat_id}}/accept", "host": ["{{base_url}}"], "path": ["requests", "{{chat_id}}", "accept"] }
+      },
+      "response": []
+    },
+    {
+      "name": "Decline Request",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Cookie", "value": "{{session_cookie}}" }
+        ],
+        "url": { "raw": "{{base_url}}/requests/{{chat_id}}/delete", "host": ["{{base_url}}"], "path": ["requests", "{{chat_id}}", "delete"] }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Chat Messages",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Cookie", "value": "{{session_cookie}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/chats/{{chat_id}}/messages",
+          "host": ["{{base_url}}"],
+          "path": ["chats", "{{chat_id}}", "messages"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Send Message to Chat",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Cookie", "value": "{{session_cookie}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/chats/{{chat_id}}/messages",
+          "host": ["{{base_url}}"],
+          "path": ["chats", "{{chat_id}}", "messages"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"msg\": \"Hello from Postman!\"\n}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Leave Group",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Cookie", "value": "{{session_cookie}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/chats/{{chat_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["chats", "{{chat_id}}"]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.expect(pm.response.code).to.eql(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Logout",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Cookie", "value": "{{session_cookie}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/logout",
+          "host": ["{{base_url}}"],
+          "path": ["logout"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000" },
+    { "key": "username", "value": "user1" },
+    { "key": "password", "value": "password123" },
+    { "key": "other_username", "value": "user2" },
+    { "key": "chat_id", "value": "" },
+    { "key": "session_cookie", "value": "" }
+  ]
+}

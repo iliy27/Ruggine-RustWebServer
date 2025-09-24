@@ -1,0 +1,34 @@
+html, body, #root {
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Hides the scrollbar on Chrome, Edge, Safari */
+.sidebar-chat-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hides the scrollbar on Firefox */
+.sidebar-chat-list {
+  scrollbar-width: none;
+}
+
+/* Hides the scrollbar on IE/Edge legacy */
+.sidebar-chat-list {
+  -ms-overflow-style: none;
+}
+
+/* Hides the scrollbar on Chrome, Edge, Safari */
+.message-list-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hides the scrollbar on Firefox */
+.message-list-scroll {
+  scrollbar-width: none;
+}
+
+/* Hides the scrollbar on IE/Edge legacy */
+.message-list-scroll {
+  -ms-overflow-style: none;
+}
