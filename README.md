@@ -23,3 +23,13 @@ This setup allowed me to practice full-stack development with a modern stack: Re
 ## 🦀 Rust WebServer
 The Rust server for Ruggine handles both REST API requests and WebSocket connections for real-time messaging. It follows a layered architecture with handlers for each entity (user, chat, messages) and repositories managing database access, ensuring modularity and maintainability. REST endpoints manage static data like chat lists, invitations, and message history, while WebSockets provide near-instant messaging with asynchronous handling via Tokio. Utilities include secure password hashing, custom error handling, and monitoring tools. Key Rust libraries include Axum and Tower-HTTP for the web framework, SQLx for database access, Serde for JSON serialization, and Bcrypt and Async-Session for authentication and session management.
 
+## Some screenshots of the application
+<img width="526" height="275" alt="Image" src="https://github.com/user-attachments/assets/f0b557a9-d760-45d4-8819-e22540891b25" />
+<img width="525" height="276" alt="Image" src="https://github.com/user-attachments/assets/52e3dfcd-8312-4d38-b53c-3fb613db6339" />
+<img width="502" height="263" alt="Image" src="https://github.com/user-attachments/assets/620ec14e-ffad-4ac4-a53f-6a3fdb97bea3" />
+
+---
+
+> Disclaimer
+The project was built and tested locally before uploading to GitHub. Therefore, the repository only has one commit, which contains the full project.
+
